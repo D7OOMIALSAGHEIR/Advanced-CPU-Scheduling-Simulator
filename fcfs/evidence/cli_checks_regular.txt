@@ -1,0 +1,69 @@
+Command: build\fcfs.exe build/cli_invalid.csv
+Raw system status: 1
+Stderr:
+Error: line 1 field 4: expected a nonnegative decimal integer in range
+
+Command: build\fcfs.exe build/cli_invalid.csv
+Raw system status: 1
+Stderr:
+Error: workload is empty
+
+Command: build\fcfs.exe build/cli_invalid.csv
+Raw system status: 1
+Stderr:
+Error: line 2: duplicate PID 1
+
+Command: build\fcfs.exe build/cli_invalid.csv --tick-limit 0
+Raw system status: 1
+Stderr:
+Error: invalid config: tick limit must be positive; switch cost and threshold nonnegative; all <= 144115188075855871
+
+Command: build\fcfs.exe build/cli_invalid.csv --switch-cost -1
+Raw system status: 1
+Stderr:
+Error: invalid value '-1' for --switch-cost (range 0..144115188075855871)
+
+Command: build\fcfs.exe build/cli_invalid.csv --unknown 0
+Raw system status: 1
+Stderr:
+Error: unknown option '--unknown'
+
+Command: build\fcfs.exe build/cli_invalid.csv --switch-cost
+Raw system status: 1
+Stderr:
+Error: missing value for '--switch-cost'
+
+Command: build\fcfs.exe build/cli_invalid.csv --tick-limit 1 --trace build/cli.trace.csv --json build/cli.json
+Raw system status: 1
+Stderr:
+Error: simulation tick limit reached at 1 (0/1 completed)
+
+Command: build\fcfs.exe build/cli_invalid.csv --switch-cost 0 --tick-limit 2 --trace build/cli.trace.csv --json build/cli.json
+Raw system status: 0
+Stderr:
+
+Command: build\fcfs.exe build/cli_input.csv --trace build/./cli_input.csv --json build/cli.json
+Raw system status: 1
+Stderr:
+Error: workload, trace, and JSON paths must be nonempty and distinct
+
+Command: build\fcfs.exe build/cli_input.csv --trace build/cli.trace.csv --json build/./cli_input.csv
+Raw system status: 1
+Stderr:
+Error: workload, trace, and JSON paths must be nonempty and distinct
+
+Command: build\fcfs.exe build/cli_input.csv --trace build/cli_alias.csv --json build/./cli_alias.csv
+Raw system status: 1
+Stderr:
+Error: trace and JSON paths identify the same file
+
+Command: build\fcfs.exe build/cli_input.csv --tick-limit 1 --trace build/cli.trace.csv --json build/cli.json
+Raw system status: 1
+Stderr:
+Error: simulation tick limit reached at 1 (0/1 completed)
+
+Command: build\fcfs.exe build/cli_input.csv --trace build/this_directory_does_not_exist/trace.csv --json build/cli.json
+Raw system status: 1
+Stderr:
+Error: cannot open trace 'build/this_directory_does_not_exist/trace.csv': No such file or directory
+

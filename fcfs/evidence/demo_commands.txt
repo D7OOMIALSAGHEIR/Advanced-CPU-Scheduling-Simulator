@@ -1,0 +1,3 @@
+build\fcfs.exe workloads/basic.csv --switch-cost 0 --trace evidence/basic.trace.csv --json evidence/basic.json > evidence/basic.console.txt
+build\fcfs.exe workloads/cpu_io.csv --switch-cost 1 --trace evidence/cpu_io.trace.csv --json evidence/cpu_io.json > evidence/cpu_io.console.txt
+build\fcfs.exe workloads/simultaneous.csv --switch-cost 1 --trace evidence/simultaneous.trace.csv --json evidence/simultaneous.json > evidence/simultaneous.console.txt

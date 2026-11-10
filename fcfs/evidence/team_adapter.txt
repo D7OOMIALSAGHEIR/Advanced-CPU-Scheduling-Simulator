@@ -1,0 +1,10 @@
+clang -std=c11 -Wall -Wextra -Wpedantic -Werror -Wconversion -Wshadow -O2 -Iinclude -Iintegration -Iintegration/observed_headers src/fcfs.c integration/team_fcfs.c tests/test_team_adapter.c -o build/test_team_adapter.exe
+Build exit status: 0
+build/test_team_adapter.exe
+PASS: FIFO, original PCB pointers, field independence, no preemption
+PASS: 1024-process capacity, FIFO wrap, no Process.next changes
+PASS: invalid bindings and callback pointers
+PASS: duplicate detection, sticky errors, init reset
+PASS: cleanup, unbound callbacks, rebind
+5/5 team adapter groups passed; 4147 checks.
+Run exit status: 0

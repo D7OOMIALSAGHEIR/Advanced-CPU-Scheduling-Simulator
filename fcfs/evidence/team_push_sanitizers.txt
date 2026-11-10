@@ -1,0 +1,30 @@
+set FCFS_TEST_PROGRAM=build\fcfs_sanitize.exe&& build\test_fcfs_sanitize.exe
+PASS: circular FIFO full/empty, wrap-around, callbacks
+PASS: hand-calculated basic timeline and every metric
+PASS: unsorted/equal arrivals and preserved input indices
+PASS: priority independence
+PASS: one process, idle gaps, same PID after I/O
+PASS: blocking/reentry and no arrival or unblock preemption
+PASS: I/O completion cannot preempt a running CPU burst
+PASS: zero I/O, queued jobs before arrivals before unblocks
+PASS: independent I/O, simultaneous completions in input order
+PASS: positive switch cost, reservation, arrivals during switching
+PASS: previous PID retained across idle
+PASS: continuous versus total wait, strict threshold
+PASS: CSV whitespace, comments and CRLF
+PASS: malformed/empty/duplicate/overflow inputs
+PASS: 1024-process and 31-burst input bounds
+PASS: validation also protects in-memory workloads
+PASS: invalid configuration and exact tick-limit boundary
+PASS: verification rejects damaged invariants
+PASS: CLI errors return nonzero status; valid CLI run succeeds
+  Stress seed=433: 256 completed; ticks=4124, useful=3357, idle=0, switch=767; two traces byte-identical.
+PASS: fixed-seed 256-process stress, two identical traces
+20/20 test groups passed.
+build\test_team_adapter_sanitize.exe
+PASS: FIFO, original PCB pointers, field independence, no preemption
+PASS: 1024-process capacity, FIFO wrap, no Process.next changes
+PASS: invalid bindings and callback pointers
+PASS: duplicate detection, sticky errors, init reset
+PASS: cleanup, unbound callbacks, rebind
+5/5 team adapter groups passed; 4147 checks.

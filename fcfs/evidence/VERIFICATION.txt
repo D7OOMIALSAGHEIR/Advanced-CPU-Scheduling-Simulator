@@ -1,0 +1,117 @@
+FCFS verification record
+10 November 2026
+
+Scope
+Only the FCFS contribution and its standalone reference engine were implemented.
+The supplied proposal and Phase 2 feedback were read before implementation.
+No shared repository, actual team PCB, or scheduler interface was attached
+during the initial standalone implementation. The repository follow-up below
+records the later inspection after the user provided the team URL.
+
+Environment
+Native Windows x86_64; Clang 23.1.5 (LLVM-MinGW UCRT); GNU Make 4.4.1.
+The portable toolchain was downloaded into the workspace, not installed globally.
+Toolchain version output is captured in compiler.txt.
+No Linux/macOS execution is claimed. WSL access was denied in this environment.
+
+Strict build and C tests
+Command from package root:
+  mingw32-make CC=clang -B all test
+Exit status: 0. All 20 C test groups passed.
+Flags: -std=c11 -Wall -Wextra -Wpedantic -Werror -Wconversion -Wshadow -O2
+The actual compiler commands and test output are in tests.txt.
+
+AddressSanitizer and UndefinedBehaviorSanitizer
+Environment used in PowerShell before running the command:
+  $env:ASAN_OPTIONS = 'detect_leaks=0:halt_on_error=1'
+  $env:UBSAN_OPTIONS = 'halt_on_error=1:print_stacktrace=1'
+Command:
+  mingw32-make CC=clang sanitize
+Exit status: 0. All 20 C test groups passed, with no sanitizer diagnostics.
+Both the CLI and test harness were instrumented. The harness invoked the
+instrumented CLI through FCFS_TEST_PROGRAM. Flags include:
+  -g -O1 -fno-omit-frame-pointer -fsanitize=address,undefined
+  -fno-sanitize-recover=all
+Actual commands and output are in sanitizers.txt. Leak detection was explicitly
+disabled; no LeakSanitizer or Valgrind leak-check result is claimed.
+
+Meaningful coverage
+Hand-calculated timelines and every specified metric; unsorted and equal
+arrivals; priority independence; single process and idle periods; independent
+I/O; CPU/I/O reentry; no preemption on arrival or unblock; zero I/O and ordered
+simultaneous events; zero and positive switch cost; free first/same-PID dispatch;
+PID retained across idle; reserved switching and arrivals during switching;
+circular FIFO wrap/full/empty; continuous versus cumulative wait and strict
+threshold; empty, malformed, duplicate, overflowing, NUL-containing and oversized
+inputs; maximum 1024 processes and 31 bursts; invalid config; tick-limit failure
+and exact-limit completion; intentionally damaged conservation invariants.
+
+Actual CLI negative cases returned nonzero status and clear errors. Path-alias
+regressions verify that the workload cannot be overwritten by alternate output
+spellings. Failed simulations preserve preexisting output contents. Ordinary
+and instrumented CLI logs are in cli_checks_regular.txt and
+cli_checks_sanitized.txt. cli_checks.txt is the latest harness-generated copy.
+
+Deterministic stress
+The C test harness uses xorshift32 with seed 433, generates 256 processes, loads
+the generated CSV, and executes it twice with switch cost 1 and tick limit 100000.
+Both runs complete all 256 processes.
+  Total ticks: 4124 = 3357 RUN + 0 IDLE + 767 SWITCH.
+  Context switches: 767.
+The harness compares both complete trace streams byte for byte and checks
+per-process results and trace accounting. SHA256 hashes independently match:
+  2F237EA1B65BF096394F392C1AF5DD77DFF5EBAB7027F9719FA355C309BF6805
+See stress_a.trace.csv, stress_b.trace.csv, stress.json, stress_sha256.txt,
+and ../workloads/stress_seed_433.csv.
+
+Captured demonstrations
+Command: mingw32-make CC=clang demo
+Exit status: 0. Exact demo commands are in demo_commands.txt.
+Each sample has a console report, per-tick CSV trace, and metrics JSON.
+  basic:        3/3 complete; 9 total = 9 RUN + 0 IDLE + 0 SWITCH.
+                Mean wait 11/3; two counted switches with zero cost.
+  cpu_io:       3/3 complete; 13 total = 9 RUN + 0 IDLE + 4 SWITCH.
+                Mean wait 4; useful CPU utilization 9/13.
+  simultaneous: 3/3 complete; 8 total = 5 RUN + 0 IDLE + 3 SWITCH.
+                Mean wait 11/3; arrivals precede the zero-I/O reentry.
+All three samples and the stress workload satisfy per-process
+turnaround = CPU service + I/O time + waiting. At most one process executes per
+tick; RUN + IDLE + SWITCH equals total time. All four JSON files also parsed
+successfully with the host JSON reader after capture.
+
+Remaining integration
+The follow-up adapter targets the observed provisional PCB/callback signatures.
+Keep the final team's main and simulation engine. Recheck final headers, agree
+on event order, switch accounting, and metrics, then run through that engine.
+No other scheduler, teammate work, overall completion percentage, or deployment
+is claimed by this contribution.
+
+Initial standalone archive check
+The ZIP was checked for integrity and extracted into a separate clean workspace.
+It contains no build/ scratch directory or compiled binaries. Running
+  mingw32-make CC=clang all test
+from that fresh source extraction rebuilt both programs and passed all 20 test
+groups with exit status 0. Output is captured in archive_build.txt. The package
+also includes source_manifest.sha256 for source/document/evidence file hashes.
+
+Team repository follow-up
+The user supplied the confirmed repository URL:
+  https://github.com/D7OOMIALSAGHEIR/Advanced-CPU-Scheduling-Simulator
+main at 3cc7c74634e8c1be84de7315cc3a9a4e0ace492d contained only README.md.
+The SJF/SRTF and Round Robin feature branches contained identical provisional
+Process and Scheduler headers. Their exact source commits and blob hashes are
+recorded in integration/observed_headers/provenance.txt. No shared engine or
+production main was available in the inspected branches.
+
+Added integration/team_fcfs.c and team_fcfs.h for those actual callbacks, plus
+C adapter tests. The adapter reuses the existing O(1) circular FIFO and stable
+array indices; it neither copies Process structs nor adds a main or engine.
+Both strict C11 and ASan/UBSan adapter runs passed 5/5 groups and 4,147 checks,
+exit status 0, with no diagnostics. Commands and results are captured in
+team_adapter.txt and team_adapter_sanitizers.txt.
+
+The updated Makefile test and sanitize targets were then executed successfully:
+20/20 reference groups plus 5/5 adapter groups in each run. Output is captured
+in team_push_tests.txt and team_push_sanitizers.txt. Leak detection was disabled.
+INTEGRATION.txt describes binding, sticky errors, cleanup, the single-instance
+limitation of the observed API, and final shared-engine work still required.

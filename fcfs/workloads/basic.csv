@@ -1,0 +1,5 @@
+# Basic FCFS: all arrive at zero; priority does not change FIFO order.
+# pid,arrival,priority,cpu[,io,cpu...]
+1,0,9,4
+2,0,0,3
+3,0,5,2
