@@ -1,0 +1,109 @@
+FCFS Adapter for the Provisional Team Scheduler Interface
+
+REPOSITORY INSPECTION
+Confirmed team repository:
+  https://github.com/D7OOMIALSAGHEIR/Advanced-CPU-Scheduling-Simulator
+
+The captured interface comes from feature/sjf-srtf at commit:
+  14f75e3a6c446d8a4c986de3b0a4b60378d1d77a
+Original paths:
+  sjf_srtf/include/process.h
+  sjf_srtf/include/scheduler.h
+The same Git blobs were present in round_robin/include/ on feature/round-robin
+at fea290c13ba8c9c3a859b104c890ed1db9af65e4:
+  process.h    cf0cd53daad88c6c60bdeb25c7dce5548b67382d
+  scheduler.h  e30aeb6b1006cde34c80caa1f46db79ba853d0d8
+
+Exact copies and provenance are in integration/observed_headers/. Those headers
+describe themselves as provisional. They are test fixtures and must not be
+treated as the finalized shared PCB/API. No shared simulation engine or
+production main was present in the inspected main, feature/sjf-srtf, or
+feature/round-robin branches. The intended contribution location is fcfs/ on
+feature/fcfs; this document does not itself assert a push or merge.
+
+WHAT TO LINK
+For the team engine, compile only the FCFS policy and adapter:
+  src/fcfs.c
+  integration/team_fcfs.c
+Use include/ and integration/ plus the team's actual shared include directory.
+Keep the team's engine, workload loader, metrics, and single main function.
+src/main.c and src/simulation.c are the standalone reference demo, not additional
+entry points or a replacement engine for a shared build.
+
+The adapter exports Scheduler fcfs_scheduler with the observed callbacks:
+  init          Reset the FCFS queue for the bound array.
+  on_arrival    Append the Process pointer's stable array index.
+  on_unblock    Append its index after I/O makes it ready again.
+  pick_next     Remove the oldest index and return its bound Process pointer.
+  should_preempt Return 0: FCFS never requests preemption.
+  on_exit       No-op: dispatch already removed the index from the ready queue.
+The adapter does not copy Process structs or use Process.next as a linked list.
+It does not run CPU ticks or own burst, I/O, time, or metric accounting.
+
+Public bridge declarations in integration/team_fcfs.h are:
+  bool team_fcfs_bind(Process *processes, size_t count);
+  const char *team_fcfs_error(void);
+  void team_fcfs_cleanup(void);
+  extern Scheduler fcfs_scheduler;
+
+LIFECYCLE AND ERRORS
+The host owns the Process array. Keep its address, size, and element locations
+stable throughout a run. team_fcfs_bind returns true for a valid array of
+1..1024 processes and initializes its empty queue; false means binding failed.
+Check its return and error status before using callbacks. The host may then
+call fcfs_scheduler.init as its ordinary policy initialization step. init
+empties the queue for the current bound array, so do not call it mid-run unless
+intentionally restarting that run. Use the arrival/unblock/pick callbacks at
+the engine's READY transitions. Call team_fcfs_cleanup when done. Rebinding
+cleans up the previous binding and starts another run/array.
+
+The provisional Scheduler API has no context parameter. Consequently this
+adapter uses one bound instance at a time; it cannot drive concurrent or
+interleaved simulations. A future context-aware API should move this state into
+an explicit per-simulation policy object.
+
+The provisional callbacks return void for enqueue operations. They cannot
+directly return a queue or pointer-validation error. team_fcfs_error returns
+NULL when no error exists, or a sticky message on failure. The host must check
+it after callbacks and stop on error. Errors are reset by init, bind, or cleanup;
+these reset operations also discard the queued entries. After an error the
+enqueue/pick operations do not resume until reset. A NULL pick result can mean
+an empty queue or an error, so inspect team_fcfs_error before assuming empty.
+Duplicate enqueues and pointers outside the bound array are rejected. Pointer
+validation uses uintptr_t on ordinary flat-address systems, as documented in
+the adapter source; the reference simulator core does not require that bridge.
+
+REFERENCE ADAPTER BUILD AND RUN
+Run these commands from the FCFS package root (fcfs/ after repository placement)
+with clang on PATH. They compile against the exact captured header fixtures.
+In Windows PowerShell:
+  New-Item -ItemType Directory -Path build -Force
+  clang -std=c11 -Wall -Wextra -Wpedantic -Werror -Wconversion -Wshadow -O2 -Iinclude -Iintegration -Iintegration/observed_headers src/fcfs.c integration/team_fcfs.c tests/test_team_adapter.c -o build/test_team_adapter.exe
+  .\build\test_team_adapter.exe
+On POSIX, create build/ with mkdir -p build and use the same compiler arguments
+with -o build/test_team_adapter, then run ./build/test_team_adapter.
+
+The Makefile also supplies test-adapter and sanitize-adapter targets. On native
+Windows use mingw32-make test-adapter CC=clang and mingw32-make sanitize-adapter
+CC=clang. The sanitizer environment and limitations in README.txt also apply.
+The adapter tests are separate from the reference engine's 20 test groups.
+The strict C11 build and the ASan/UBSan build each passed 5/5 adapter groups
+with 4147 checks, exit status 0, and no sanitizer diagnostics. The tests cover
+FIFO and original PCB identity, full capacity and wrap-around, unchanged
+Process.next fields, invalid binding/pointers, duplicate enqueues, sticky-error
+handling, init reset, cleanup, and rebind. See evidence/team_adapter.txt and
+evidence/team_adapter_sanitizers.txt for the actual commands and results. Leak
+detection was disabled, so these results do not claim a leak-check outcome.
+
+FINAL ENGINE INTEGRATION CHECKS
+Replace -Iintegration/observed_headers with the finalized shared include path;
+do not add both competing process.h/scheduler.h versions to a production build.
+Recheck typedef names and callback signatures against that final revision.
+Agree that the engine commits CPU completion, then arrivals in input order,
+then I/O completions in input order, before dispatch/execution. Keep existing
+ready entries ahead of newly ready entries and do not preempt FCFS on arrival
+or unblock. Agree on switch reservation, READY-time accounting, first-dispatch
+and same-PID conventions, and metric definitions before policy comparisons.
+Exercise the adapter with the real engine, CPU/I/O workloads, simultaneous
+events, and shared metrics. Header-level adapter compatibility alone cannot
+establish end-to-end behavior with a finalized engine that was not available.

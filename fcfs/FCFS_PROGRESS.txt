@@ -1,0 +1,57 @@
+FCFS Contribution to the Advanced CPU Scheduling Simulator
+
+The FCFS contribution implements a non-preemptive FIFO ready queue in C11.
+The circular queue stores stable process-array indices and provides constant
+time enqueue and dequeue operations. New arrivals and processes returning
+from I/O enter the tail; a running process retains the CPU until its current
+CPU burst completes. Process priority does not change FCFS decisions.
+
+A standalone reference engine demonstrates CPU/I/O bursts, process states,
+independent I/O completion, idle intervals, and configurable context-switch
+cost. The engine advances one millisecond per tick. Simultaneous events use a
+defined order: previous CPU completion, arrivals in input order, I/O completions
+in input order, then dispatch and execution. The selected process is reserved
+during switching. Switch delays remain part of READY waiting and initial
+response time. The first dispatch is free, and subsequent different-PID
+dispatches are counted consistently even across idle periods.
+
+The package includes CSV workload validation, a readable console report,
+per-tick RUN/IDLE/SWITCH traces, and JSON process and summary metrics. Metrics
+cover waiting, turnaround, response, throughput, useful CPU utilization,
+context switches, continuous ready waiting, and the specified Jain fairness
+formula. The excessive-wait count is an indicator of long waits, not proof of
+indefinite starvation.
+
+Verification on native Windows x86_64 used LLVM-MinGW Clang 23.1.5, GNU Make
+4.4.1, and strict C11 warning flags. All 20 C test groups passed in both the
+ordinary and AddressSanitizer/UndefinedBehaviorSanitizer builds, with exit
+status 0 and no sanitizer diagnostics. Tests cover hand-calculated timelines,
+queue boundaries, arrival and I/O ordering, switch accounting, input and
+configuration errors, and tick-limit failure. A fixed-seed 256-process stress
+workload completed in 4124 ticks (3357 RUN, 0 IDLE, 767 SWITCH); its two captured
+traces were byte-identical. Actual console tables, traces, JSON, and test logs
+are included as evidence. Leak detection was disabled; no leak-check, Valgrind,
+or POSIX runtime result is claimed.
+
+The principal design challenge is consistent timing and metric accounting at
+CPU completion and switching boundaries. The confirmed team repository was
+subsequently inspected. Its SJF/SRTF and Round Robin branches contain identical
+provisional Process and Scheduler header blobs; these were captured with commit
+provenance as integration fixtures. An FCFS adapter targets those callback
+signatures, exports fcfs_scheduler, and binds a stable Process array while
+retaining the circular index queue. It reports errors through a separate status
+function because the provisional callbacks return void. That API permits one
+bound adapter instance at a time.
+
+Against the captured provisional headers, all 5 adapter test groups (4147
+checks) passed in both strict C11 and ASan/UBSan builds with exit status 0 and
+no sanitizer diagnostics. These tests verify FIFO order, original PCB identity,
+capacity/wrap-around, invalid inputs, duplicate detection, and reset/error
+handling. The adapter evidence is separate from the reference engine tests.
+
+No shared simulation engine or production main was present in the inspected
+branches. Remaining integration is to link the adapter into the finalized team
+engine, retain that engine's single main, replace fixture includes with the
+final shared headers, and verify agreed event and metric definitions. The
+standalone engine remains a reference demonstration. This contribution does
+not implement other schedulers or state an overall team completion percentage.

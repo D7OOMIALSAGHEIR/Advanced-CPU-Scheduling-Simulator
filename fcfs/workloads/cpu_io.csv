@@ -1,0 +1,5 @@
+# P1 and P2 can perform I/O independently while another process runs.
+# P3 arrives while P2 is reserved for a one-tick switch.
+1,0,4,2,3,2
+2,1,1,1,2,2
+3,3,0,2

@@ -1,0 +1,27 @@
+{
+  "policy": "FCFS",
+  "tick_ms": 1,
+  "config": {"switch_cost": 1, "tick_limit": 1000000, "starvation_threshold": 50},
+  "processes": [
+    {"pid": 1, "arrival": 0, "priority": 4, "state": "DONE", "cpu_time": 4, "io_time": 3, "first_run": 0, "completion": 10, "waiting": 3, "turnaround": 10, "response": 0, "max_continuous_ready_wait": 3, "excessive_wait": false},
+    {"pid": 2, "arrival": 1, "priority": 1, "state": "DONE", "cpu_time": 3, "io_time": 2, "first_run": 3, "completion": 13, "waiting": 7, "turnaround": 12, "response": 2, "max_continuous_ready_wait": 5, "excessive_wait": false},
+    {"pid": 3, "arrival": 3, "priority": 0, "state": "DONE", "cpu_time": 2, "io_time": 0, "first_run": 5, "completion": 7, "waiting": 2, "turnaround": 4, "response": 2, "max_continuous_ready_wait": 2, "excessive_wait": false}
+  ],
+  "summary": {
+    "completed": 3,
+    "total_ticks": 13,
+    "run_ticks": 9,
+    "idle_ticks": 0,
+    "switch_ticks": 4,
+    "context_switches": 4,
+    "average_waiting": 4,
+    "average_turnaround": 8.66666666667,
+    "average_response": 1.33333333333,
+    "throughput_per_100_ticks": 23.0769230769,
+    "useful_cpu_utilization": 0.692307692308,
+    "max_continuous_ready_wait": 5,
+    "excessive_wait_processes": 0,
+    "jain_fairness": 0.932980599647,
+    "invariants_passed": true
+  }
+}

@@ -1,0 +1,13 @@
+FCFS reference simulator (1 tick = 1 ms)
+Switch cost: 0 | Tick limit: 1000000 | Excessive-wait threshold: 50
+PID  Arrival Priority CPU   I/O   First  Finish Wait  Turn   Resp  MaxReady
+1    0       9        4     0     0      4      0     4      0     0
+2    0       0        3     0     4      7      4     7      4     4
+3    0       5        2     0     7      9      7     9      7     7
+Completed: 3/3 | Total: 9 | RUN: 9 | IDLE: 0 | SWITCH: 0
+Average waiting: 3.666667 | Turnaround: 6.666667 | Response: 3.666667
+Throughput/100 ticks: 33.333333 | Useful CPU utilization: 100.000000%
+Context switches: 2 | Max continuous ready wait: 7 | Excessive-wait processes: 0
+Jain fairness (CPU service / turnaround): 0.736684375
+Invariants: PASS
+Excessive waiting is an indicator, not proof of indefinite starvation.

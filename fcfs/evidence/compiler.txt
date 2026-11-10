@@ -1,0 +1,11 @@
+clang version 23.1.5 (https://github.com/llvm/llvm-project.git 392dfff97d29b59d77e5cac6d4b6ef2585fe7117)
+Target: x86_64-w64-windows-gnu
+Thread model: posix
+InstalledDir: C:/Users/khale/Documents/Codex/2026-11-10/rea/work/toolchain/extracted/llvm-mingw-20261104-ucrt-x86_64/bin
+Configuration file: C:/Users/khale/Documents/Codex/2026-11-10/rea/work/toolchain/extracted/llvm-mingw-20261104-ucrt-x86_64/bin/x86_64-w64-windows-gnu.cfg
+GNU Make 4.4.1
+Built for x86_64-w64-mingw32
+Copyright (C) 1988-2023 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

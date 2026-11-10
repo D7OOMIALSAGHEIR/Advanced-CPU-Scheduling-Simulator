@@ -1,0 +1,15 @@
+Provisional team interface captured on 10 November 2026
+
+Repository: https://github.com/D7OOMIALSAGHEIR/Advanced-CPU-Scheduling-Simulator
+Branch: feature/sjf-srtf
+Commit: 14f75e3a6c446d8a4c986de3b0a4b60378d1d77a
+Paths: sjf_srtf/include/process.h and sjf_srtf/include/scheduler.h
+Git blob hashes:
+  process.h:   cf0cd53daad88c6c60bdeb25c7dce5548b67382d
+  scheduler.h: e30aeb6b1006cde34c80caa1f46db79ba853d0d8
+
+The same header blob hashes were present in round_robin/include/ on
+feature/round-robin at fea290c13ba8c9c3a859b104c890ed1db9af65e4.
+These are test fixtures. Use the finalized team headers when integrating.
+No shared simulation engine or production main was present in the inspected
+main, feature/sjf-srtf, or feature/round-robin branches.
